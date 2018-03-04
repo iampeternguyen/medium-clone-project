@@ -1,0 +1,7 @@
+.navbar-title {
+    text-align: center;
+}
+
+.navbar-title>h1 {
+    display: inline-block;
+}

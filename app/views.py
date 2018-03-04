@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from django.views.generic import (TemplateView, ListView)
 from app.forms import BloggerForm, BloggerProfileForm
+from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
-class WelcomeView(TemplateView):
-    template_name = 'app/welcome.html'
+class IndexView(TemplateView):
+    template_name = 'app/index.html'
 
 
 def register_blogger(request):
@@ -38,3 +42,26 @@ def register_blogger(request):
         'profile_form': profile_form,
         'registered': registered
     })
+
+
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            return HttpResponse("invalid login details")
+
+    else:
+        return render(request, 'app/login.html')
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))
